@@ -17,7 +17,7 @@ Todo el procesamiento ocurre en el dispositivo. La app no accede a internet ni g
 
 ## Requisitos
 
-- Android 6.0 (API 23) o superior.
+- Android 6.0 (API 23) o superior. Hasta ahora la app solo se ha probado en Android 16; en versiones anteriores debería funcionar, pero no está verificado.
 - Un dispositivo con cámara. Se prefiere la trasera; si no hay, se usa la primera disponible.
 - Permiso de cámara, que la app solicita al iniciar la detección.
 
