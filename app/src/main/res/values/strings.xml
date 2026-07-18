@@ -4,7 +4,9 @@
     <string name="start_detection">Iniciar deteccion</string>
     <string name="pause_detection">Pausar deteccion</string>
     <string name="grant_camera_permission">Conceder permiso de camara</string>
+    <string name="open_app_settings">Abrir ajustes de la aplicacion</string>
     <string name="status_waiting_permission">Permiso de camara pendiente.</string>
+    <string name="status_permission_blocked">Permiso de camara bloqueado. Abre los ajustes para concederlo.</string>
     <string name="status_active">Camara activa.</string>
     <string name="status_paused">Deteccion pausada.</string>
     <string name="status_camera_error">No se pudo abrir la camara.</string>
@@ -18,8 +20,10 @@
     <string name="light_unknown">Luz detectada: sin lectura</string>
     <string name="sensitivity_label">Sensibilidad</string>
     <string name="sensitivity_value">%1$d%%</string>
+    <string name="sensitivity_description">Sensibilidad, %1$d por ciento</string>
     <string name="interval_label">Intervalo del beep</string>
     <string name="interval_value">%1$d ms</string>
+    <string name="interval_description">Intervalo del beep, %1$d milisegundos</string>
     <string name="decrease_sensitivity">Reducir sensibilidad</string>
     <string name="increase_sensitivity">Aumentar sensibilidad</string>
     <string name="decrease_interval">Reducir intervalo del beep</string>

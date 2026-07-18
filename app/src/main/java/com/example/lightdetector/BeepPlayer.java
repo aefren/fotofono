@@ -13,9 +13,9 @@ final class BeepPlayer {
 
     private final Object lock = new Object();
     private HandlerThread audioThread;
-    private Handler audioHandler;
+    private volatile Handler audioHandler;
     private AudioTrack audioTrack;
-    private boolean running;
+    private volatile boolean running;
     private double latestLuma;
     private int sensitivityPercent = 100;
     private int intervalMs = 1000;
@@ -96,8 +96,11 @@ final class BeepPlayer {
     }
 
     private AudioTrack ensureTrack() {
-        if (audioTrack != null && audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
-            return audioTrack;
+        if (audioTrack != null) {
+            if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
+                return audioTrack;
+            }
+            releaseTrack();
         }
 
         int minBufferSize = AudioTrack.getMinBufferSize(
@@ -131,9 +134,13 @@ final class BeepPlayer {
             return;
         }
         try {
-            audioTrack.pause();
-            audioTrack.flush();
+            if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
+                audioTrack.pause();
+                audioTrack.flush();
+            }
             audioTrack.release();
+        } catch (IllegalStateException ignored) {
+            // The track was already torn down; releasing is best effort.
         } finally {
             audioTrack = null;
         }

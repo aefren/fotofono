@@ -13,9 +13,12 @@ Accessibility is a product requirement, not polish: preserve TalkBack labels, `a
 This is a plain Gradle/AGP Android project (no Kotlin, no AndroidX, no Compose, no CameraX — intentionally minimal, framework-only Java). There is no test source set in the repo, so there are no unit/instrumented tests to run.
 
 Windows (this environment's `local.properties` already points `sdk.dir` at the Windows SDK):
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"   # JDK 21
+.\gradlew.bat lintDebug assembleDebug
 ```
-./gradlew lintDebug assembleDebug
-```
+
+**Setting `JAVA_HOME` is required on this machine.** The default `java` on PATH is JDK 24 (`C:\Program Files\Java\jdk-24`), which Gradle 8.13 rejects with `Unsupported class file major version 68`. Android Studio's bundled JBR is JDK 21 and works. Anything in the 17–21 range is fine.
 
 If working from a WSL/Linux shell instead, use the bundled helper, which temporarily repoints `local.properties` at a Linux SDK/JDK and restores it on exit:
 ```

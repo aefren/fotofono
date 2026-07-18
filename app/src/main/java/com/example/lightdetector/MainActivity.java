@@ -3,7 +3,9 @@ package com.example.lightdetector;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -18,11 +20,13 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.AudioManager;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
@@ -38,6 +42,8 @@ import java.util.Collections;
 
 public final class MainActivity extends Activity {
     private static final int CAMERA_PERMISSION_REQUEST = 41;
+    private static final String STATE_USER_PAUSED = "userPaused";
+    private static final String PREF_PERMISSION_REQUESTED = "cameraPermissionRequested";
     private static final int SENSITIVITY_MIN = 5;
     private static final int SENSITIVITY_MAX = 200;
     private static final int SENSITIVITY_STEP = 5;
@@ -67,8 +73,10 @@ public final class MainActivity extends Activity {
     private CameraCaptureSession captureSession;
     private Surface captureSurface;
     private volatile boolean cameraActive;
+    private volatile boolean cameraOpening;
     private volatile boolean exposureLockAvailable = true;
     private boolean userPaused;
+    private boolean permissionRequested;
     private long lastUiUpdateAt;
     private volatile double latestLuma;
     private int sensitivityPercent = 100;
@@ -82,10 +90,20 @@ public final class MainActivity extends Activity {
         configureSystemBars();
         bindViews();
         preferences = getSharedPreferences("settings", MODE_PRIVATE);
+        permissionRequested = preferences.getBoolean(PREF_PERMISSION_REQUESTED, false);
+        if (savedInstanceState != null) {
+            userPaused = savedInstanceState.getBoolean(STATE_USER_PAUSED, false);
+        }
         loadSettings();
         configureControls();
         updateSettingsText(false);
         updatePermissionState();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_USER_PAUSED, userPaused);
     }
 
     @Override
@@ -121,10 +139,18 @@ public final class MainActivity extends Activity {
             startDetection();
         } else {
             userPaused = true;
-            statusText.setText(R.string.status_permission_denied);
             permissionButton.setVisibility(View.VISIBLE);
             toggleButton.setText(R.string.start_detection);
             toggleButton.setEnabled(true);
+            boolean blocked = isPermissionBlocked();
+            permissionButton.setText(blocked
+                    ? R.string.open_app_settings
+                    : R.string.grant_camera_permission);
+            String message = getString(blocked
+                    ? R.string.status_permission_blocked
+                    : R.string.status_permission_denied);
+            statusText.setText(message);
+            announce(message);
         }
     }
 
@@ -257,10 +283,10 @@ public final class MainActivity extends Activity {
     private void updateSettingsText(boolean fromUser) {
         sensitivityValueText.setText(getString(R.string.sensitivity_value, sensitivityPercent));
         intervalValueText.setText(getString(R.string.interval_value, intervalMs));
-        sensitivitySeekBar.setContentDescription(getString(
-                R.string.sensitivity_label) + ", " + sensitivityPercent + " por ciento");
-        intervalSeekBar.setContentDescription(getString(
-                R.string.interval_label) + ", " + intervalMs + " milisegundos");
+        sensitivitySeekBar.setContentDescription(
+                getString(R.string.sensitivity_description, sensitivityPercent));
+        intervalSeekBar.setContentDescription(
+                getString(R.string.interval_description, intervalMs));
         if (fromUser) {
             beepPlayer.setInput(latestLuma, sensitivityPercent, intervalMs);
         }
@@ -280,10 +306,20 @@ public final class MainActivity extends Activity {
         if (hasCameraPermission()) {
             permissionButton.setVisibility(View.GONE);
             toggleButton.setEnabled(true);
+            if (userPaused) {
+                statusText.setText(R.string.status_paused);
+                toggleButton.setText(R.string.start_detection);
+            }
         } else {
             permissionButton.setVisibility(View.VISIBLE);
             toggleButton.setEnabled(true);
-            statusText.setText(R.string.status_waiting_permission);
+            boolean blocked = isPermissionBlocked();
+            permissionButton.setText(blocked
+                    ? R.string.open_app_settings
+                    : R.string.grant_camera_permission);
+            statusText.setText(blocked
+                    ? R.string.status_permission_blocked
+                    : R.string.status_waiting_permission);
         }
     }
 
@@ -291,12 +327,44 @@ public final class MainActivity extends Activity {
         return checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * True once the user has denied the permission with "don't ask again", where
+     * requestPermissions() silently does nothing and only Settings can grant it.
+     */
+    private boolean isPermissionBlocked() {
+        return permissionRequested
+                && !hasCameraPermission()
+                && !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+    }
+
     private void requestCameraPermission() {
+        if (isPermissionBlocked()) {
+            openAppSettings();
+            return;
+        }
+        permissionRequested = true;
+        preferences.edit().putBoolean(PREF_PERMISSION_REQUESTED, true).apply();
         requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
     }
 
+    private void openAppSettings() {
+        Intent intent = new Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", getPackageName(), null));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException exception) {
+            announce(getString(R.string.status_permission_blocked));
+        }
+    }
+
     private void startDetection() {
-        if (cameraActive) {
+        // cameraOpening covers the async gap before cameraActive flips: granting the
+        // permission delivers onRequestPermissionsResult and then onResume, and without
+        // it both would open the camera, leaking an ImageReader and disconnecting the
+        // first device.
+        if (cameraActive || cameraOpening) {
             return;
         }
         if (!hasCameraPermission()) {
@@ -305,15 +373,16 @@ public final class MainActivity extends Activity {
             return;
         }
 
+        cameraOpening = true;
         startCameraThread();
         openCamera();
     }
 
     private void stopDetection(boolean updateUi) {
         beepPlayer.stop();
-        closeCamera();
-        stopCameraThread();
+        closeCameraAndThread();
         cameraActive = false;
+        cameraOpening = false;
         if (updateUi) {
             statusText.setText(R.string.status_paused);
             toggleButton.setText(R.string.start_detection);
@@ -350,6 +419,7 @@ public final class MainActivity extends Activity {
             String cameraId = findBackCameraId(cameraManager);
             if (cameraId == null) {
                 statusText.setText(R.string.status_no_camera);
+                cameraOpening = false;
                 stopCameraThread();
                 return;
             }
@@ -468,6 +538,7 @@ public final class MainActivity extends Activity {
         try {
             applyRepeatingCapture(surface);
             cameraActive = true;
+            cameraOpening = false;
             beepPlayer.setInput(latestLuma, sensitivityPercent, intervalMs);
             beepPlayer.start();
             mainHandler.post(() -> {
@@ -508,6 +579,20 @@ public final class MainActivity extends Activity {
         captureSession.setRepeatingRequest(request.build(), null, cameraHandler);
     }
 
+    /**
+     * Closes the camera on the camera thread, where onImageAvailable also runs, so the
+     * two cannot overlap. quitSafely() drains the posted close before the thread exits.
+     */
+    private void closeCameraAndThread() {
+        Handler handler = cameraHandler;
+        if (handler != null) {
+            handler.post(this::closeCamera);
+        } else {
+            closeCamera();
+        }
+        stopCameraThread();
+    }
+
     private void closeCamera() {
         if (captureSession != null) {
             captureSession.close();
@@ -518,6 +603,7 @@ public final class MainActivity extends Activity {
             cameraDevice = null;
         }
         if (imageReader != null) {
+            imageReader.setOnImageAvailableListener(null, null);
             imageReader.close();
             imageReader = null;
         }
@@ -582,9 +668,9 @@ public final class MainActivity extends Activity {
             return;
         }
         beepPlayer.stop();
-        closeCamera();
-        stopCameraThread();
+        closeCameraAndThread();
         cameraActive = false;
+        cameraOpening = false;
         statusText.setText(R.string.status_camera_error);
         toggleButton.setText(R.string.start_detection);
         permissionButton.setVisibility(hasCameraPermission() ? View.GONE : View.VISIBLE);

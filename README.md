@@ -21,7 +21,13 @@ Todo el procesamiento ocurre en el dispositivo. La app no accede a internet ni g
 
 ## Compilación
 
-Necesitas JDK 17 o superior y el SDK de Android con la plataforma API 36 y build-tools 36.0.0. Crea un archivo `local.properties` en la raíz apuntando a tu SDK:
+Necesitas un JDK 17–21 y el SDK de Android con la plataforma API 36 y build-tools 36.0.0. Ojo: Gradle 8.13 no admite JDK 24, que falla con `Unsupported class file major version 68`. Si tienes Android Studio instalado, su JDK incluido sirve:
+
+```bash
+export JAVA_HOME="/ruta/a/Android Studio/jbr"
+```
+
+Crea un archivo `local.properties` en la raíz apuntando a tu SDK:
 
 ```properties
 sdk.dir=/ruta/a/tu/Android/Sdk
