@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Detector de luz</string>
+    <string name="start_detection">Iniciar deteccion</string>
+    <string name="pause_detection">Pausar deteccion</string>
+    <string name="grant_camera_permission">Conceder permiso de camara</string>
+    <string name="status_waiting_permission">Permiso de camara pendiente.</string>
+    <string name="status_active">Camara activa.</string>
+    <string name="status_paused">Deteccion pausada.</string>
+    <string name="status_camera_error">No se pudo abrir la camara.</string>
+    <string name="status_no_camera">No se encontro una camara disponible.</string>
+    <string name="status_permission_denied">Permiso de camara denegado.</string>
+    <string name="exposure_lock_label">Bloquear exposicion</string>
+    <string name="exposure_lock_on">Exposicion bloqueada</string>
+    <string name="exposure_lock_off">Exposicion automatica</string>
+    <string name="exposure_lock_unavailable">Bloqueo de exposicion no disponible</string>
+    <string name="light_value">Luz detectada: %1$d%%, %2$s</string>
+    <string name="light_unknown">Luz detectada: sin lectura</string>
+    <string name="sensitivity_label">Sensibilidad</string>
+    <string name="sensitivity_value">%1$d%%</string>
+    <string name="interval_label">Intervalo del beep</string>
+    <string name="interval_value">%1$d ms</string>
+    <string name="decrease_sensitivity">Reducir sensibilidad</string>
+    <string name="increase_sensitivity">Aumentar sensibilidad</string>
+    <string name="decrease_interval">Reducir intervalo del beep</string>
+    <string name="increase_interval">Aumentar intervalo del beep</string>
+    <string name="symbol_minus">-</string>
+    <string name="symbol_plus">+</string>
+</resources>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/text_primary"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/status_waiting_permission"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/lightText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="@string/light_unknown"
+            android:textColor="@color/text_primary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/toggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:minHeight="56dp"
+            android:text="@string/start_detection"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/permissionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:minHeight="56dp"
+            android:text="@string/grant_camera_permission"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/exposureLockCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:minHeight="56dp"
+            android:text="@string/exposure_lock_label"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/sensitivityLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/sensitivitySeekBar"
+            android:layout_marginTop="30dp"
+            android:text="@string/sensitivity_label"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/sensitivityDownButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/decrease_sensitivity"
+                android:text="@string/symbol_minus"
+                android:textSize="28sp" />
+
+            <SeekBar
+                android:id="@+id/sensitivitySeekBar"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:max="195" />
+
+            <Button
+                android:id="@+id/sensitivityUpButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/increase_sensitivity"
+                android:text="@string/symbol_plus"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/sensitivityValueText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/intervalLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/intervalSeekBar"
+            android:layout_marginTop="30dp"
+            android:text="@string/interval_label"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/intervalDownButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/decrease_interval"
+                android:text="@string/symbol_minus"
+                android:textSize="28sp" />
+
+            <SeekBar
+                android:id="@+id/intervalSeekBar"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:max="9900" />
+
+            <Button
+                android:id="@+id/intervalUpButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/increase_interval"
+                android:text="@string/symbol_plus"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/intervalValueText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp" />
+    </LinearLayout>
+</ScrollView>

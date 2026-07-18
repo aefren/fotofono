@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android App Maintainer"
+  short_description: "Maintain and update Android apps"
+  default_prompt: "Use $android-app-maintainer to update, debug, or verify this Android app."
