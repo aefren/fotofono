@@ -1,6 +1,8 @@
-# Detector de luz
+# Fotófono
 
 Aplicación Android accesible que convierte la luz ambiental en sonido, pensada para personas ciegas o con baja visión. La app mide la luminosidad a través de la cámara trasera y emite un pitido cuyo tono y volumen suben con la cantidad de luz detectada: más luz, tono más agudo y más fuerte.
+
+El nombre viene del *photophone*, el aparato que Alexander Graham Bell patentó en 1880 para transmitir voz sobre un haz de luz. Esta app recorre el camino contrario: toma la luz y la convierte en sonido.
 
 Todo el procesamiento ocurre en el dispositivo. La app no accede a internet ni guarda imágenes: los fotogramas de la cámara se analizan en memoria y se descartan de inmediato.
 

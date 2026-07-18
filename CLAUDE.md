@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DetectorLuz (`com.example.lightdetector`) is a single-Activity Android app that turns ambient light level into an audible beep, built as an accessibility tool for blind/low-vision users. It samples the back camera's luminance and maps it to a beep frequency/volume/interval, entirely on-device with no network access.
+Fotófono (`com.example.lightdetector`) is a single-Activity Android app that turns ambient light level into an audible beep, built as an accessibility tool for blind/low-vision users. It samples the back camera's luminance and maps it to a beep frequency/volume/interval, entirely on-device with no network access.
 
 Accessibility is a product requirement, not polish: preserve TalkBack labels, `announceForAccessibility` calls, large touch targets, and non-color-only feedback in any change.
 
