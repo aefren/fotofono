@@ -5,6 +5,11 @@ build/
 # Android / SDK
 local.properties
 captures/
+
+# Firma: NUNCA subir el keystore ni sus contrasenas
+*.jks
+*.keystore
+keystore.properties
 *.apk
 *.aab
 *.hprof
